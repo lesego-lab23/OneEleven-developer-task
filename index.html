@@ -260,12 +260,12 @@
             validateBtn.disabled = false;
         }
 
-        showResponse({
-            status: response.ok ? 'Validation Complete' : 'Validation Failed',
-            statusCode: response.status,
-            ...data, // spread actual JSON
-            validationUrl: validationUrl
-            }, !response.ok);
+        function showResponse(data, isError = false) {
+            hideLoading();
+            responseContent.textContent = JSON.stringify(data, null, 2);
+            responseContent.style.color = isError ? '#ff6b6b' : '#00ff00';
+            response.classList.add('show');
+        }
 
         // Test API directly
         testBtn.addEventListener('click', async () => {
