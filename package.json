@@ -2,10 +2,10 @@
   "name": "one-eleven-sort-api",
   "version": "1.0.0",
   "description": "POST endpoint that sorts a string's characters alphabetically",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -13,5 +13,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

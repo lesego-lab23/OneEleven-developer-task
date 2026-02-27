@@ -1,11 +1,12 @@
 async function validate() {
-  const email    = document.getElementById('email').value.trim();
-  const url      = document.getElementById('url').value.trim();
-  const btn      = document.getElementById('btn');
+  const email = document.getElementById('email').value.trim();
+  const url   = document.getElementById('url').value.trim();
+  const data  = document.getElementById('data').value.trim();
+  const btn   = document.getElementById('btn');
   const resultEl = document.getElementById('result');
 
-  if (!email || !url) {
-    showResult('error', 'Missing fields', 'Please fill in both your email and API URL.');
+  if (!email || !url || !data) {
+    showResult('error', 'Missing fields', 'Please fill in all fields.');
     return;
   }
 
@@ -13,24 +14,19 @@ async function validate() {
   btn.classList.add('loading');
   resultEl.innerHTML = '';
 
-  const validationURL =
-    `https://yhxzjyykdsfkdrmdxgho.supabase.co/functions/v1/application-task` +
-    `?url=${encodeURIComponent(url)}&email=${encodeURIComponent(email)}`;
-
   try {
-    const res  = await fetch(validationURL);
-    const text = await res.text();
-    let body;
-    try { body = JSON.parse(text); } catch { body = text; }
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data })
+    });
 
-    const pretty = typeof body === 'object'
-      ? JSON.stringify(body, null, 2)
-      : body;
+    const body = await res.json();
+    const ok = res.ok && body.word;
 
-    const ok = res.ok || (typeof body === 'object' && !body.error);
-    showResult(ok ? 'success' : 'error', ok ? '✓ Validation passed' : '✗ Validation failed', pretty);
+    showResult(ok ? 'success' : 'error', ok ? '✓ Validation Passed' : '✗ Validation Failed', JSON.stringify(body, null, 2));
   } catch (err) {
-    showResult('error', 'Network error', err.message);
+    showResult('error', 'Network Error', err.message);
   } finally {
     btn.disabled = false;
     btn.classList.remove('loading');
@@ -41,19 +37,6 @@ function showResult(type, label, body) {
   document.getElementById('result').innerHTML = `
     <div class="result ${type}">
       <div class="result-label">${label}</div>
-      <div class="result-body">${escapeHtml(body)}</div>
+      <pre class="result-body">${body}</pre>
     </div>`;
 }
-
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g,  '&lt;')
-    .replace(/>/g,  '&gt;')
-    .replace(/"/g,  '&quot;');
-}
-
-// Allow Enter key to submit
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') validate();
-});
