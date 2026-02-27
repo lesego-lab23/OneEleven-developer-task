@@ -6,18 +6,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// POST endpoint
 app.post('/', (req, res) => {
-  const { data } = req.body;
+  try {
+    const { data } = req.body;
 
-  if (typeof data !== 'string') {
-    return res.status(400).json({ error: 'Field "data" must be a string.' });
+    // Validate input
+    if (!data || typeof data !== 'string') {
+      return res.status(400).json({ error: 'Field "data" must be a string.' });
+    }
+
+    // Convert string to array and sort
+    const word = data.split('').sort();
+
+    // Return the response exactly as expected
+    return res.status(200).json({ word });
+  } catch (err) {
+    // Always return JSON in case of unexpected errors
+    return res.status(500).json({ error: 'Server error', message: err.message });
   }
-
-  // Convert string to array of characters and sort
-  const word = data.split('').sort();
-
-  return res.status(200).json({ word });
 });
 
 module.exports = app;
