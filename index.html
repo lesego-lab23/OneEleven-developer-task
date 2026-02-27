@@ -209,7 +209,7 @@
             <div class="form-group">
                 <label for="apiUrl">API Endpoint URL:</label>
                 <input type="url" id="apiUrl" name="apiUrl" required 
-                       placeholder="https://your-api.vercel.app/api/sort-string">
+                       placeholder="https://your-api.vercel.app/folder/file">
             </div>
 
             <div class="form-group">
@@ -260,12 +260,12 @@
             validateBtn.disabled = false;
         }
 
-        function showResponse(data, isError = false) {
-            hideLoading();
-            responseContent.textContent = JSON.stringify(data, null, 2);
-            responseContent.style.color = isError ? '#ff6b6b' : '#00ff00';
-            response.classList.add('show');
-        }
+        showResponse({
+            status: response.ok ? 'Validation Complete' : 'Validation Failed',
+            statusCode: response.status,
+            ...data, // spread actual JSON
+            validationUrl: validationUrl
+            }, !response.ok);
 
         // Test API directly
         testBtn.addEventListener('click', async () => {
@@ -350,9 +350,9 @@
             if (url && !url.includes('/api/')) {
                 // Suggest the API path
                 if (url.endsWith('/')) {
-                    this.value = url + 'api/sort-string';
+                    this.value = url + 'api/sort';
                 } else {
-                    this.value = url + '/api/sort-string';
+                    this.value = url + '/api/sort';
                 }
             }
         });
