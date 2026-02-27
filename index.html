@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Validator — One Eleven</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <h1>API Endpoint Validator</h1>
+      <p>One Eleven · Developer Task</p>
+    </div>
+
+    <div class="card-body">
+      <div class="field">
+        <label for="email">Your Email Address</label>
+        <input id="email" type="email" placeholder="you@example.com" />
+      </div>
+
+      <div class="field">
+        <label for="url">Your API Endpoint URL</label>
+        <input id="url" type="url" placeholder="https://your-app-url.com/sort" />
+      </div>
+
+      <button id="btn" onclick="validate()">
+        Run Validation
+        <div class="spinner"></div>
+      </button>
+
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
