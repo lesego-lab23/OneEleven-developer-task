@@ -2,319 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API Validator — One Eleven</title>
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --red: #E8210A;
-      --black: #0D0D0D;
-      --off-white: #F2EFE9;
-      --mid: #C8C4BC;
-      --card: #161616;
-      --border: #2A2A2A;
-    }
-
-    body {
-      background: var(--black);
-      color: var(--off-white);
-      font-family: monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      overflow-x: hidden;
-    }
-
-    /* Subtle grid background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(232,33,10,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,33,10,0.04) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 560px;
-      animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Logo / header */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 2.5rem;
-    }
-
-    .logo-mark {
-      display: flex;
-      gap: 4px;
-      align-items: flex-end;
-    }
-
-    .logo-mark span {
-      display: block;
-      width: 6px;
-      background: var(--red);
-      border-radius: 1px;
-    }
-    .logo-mark span:nth-child(1) { height: 18px; }
-    .logo-mark span:nth-child(2) { height: 26px; }
-    .logo-mark span:nth-child(3) { height: 34px; }
-
-    .header-text h1 {
-      font-family: sans-serif;
-      font-weight: 800;
-      font-size: 1.05rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--off-white);
-      line-height: 1;
-    }
-
-    .header-text p {
-      font-size: 0.7rem;
-      color: var(--mid);
-      margin-top: 3px;
-      letter-spacing: 0.06em;
-    }
-
-    /* Card */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2rem;
-    }
-
-    .card-title {
-      font-family: sans-serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      margin-bottom: 0.35rem;
-      color: var(--off-white);
-    }
-
-    .card-sub {
-      font-size: 0.72rem;
-      color: var(--mid);
-      margin-bottom: 2rem;
-      letter-spacing: 0.04em;
-    }
-
-    /* Form */
-    .field {
-      margin-bottom: 1.25rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.68rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--mid);
-      margin-bottom: 0.5rem;
-    }
-
-    input {
-      width: 100%;
-      background: #0D0D0D;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 0.75rem 1rem;
-      color: var(--off-white);
-      font-family: monospace;
-      font-size: 0.82rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input:focus {
-      border-color: var(--red);
-    }
-
-    input::placeholder {
-      color: #444;
-    }
-
-    /* Button */
-    button {
-      width: 100%;
-      padding: 0.85rem 1rem;
-      background: var(--red);
-      color: #fff;
-      border: none;
-      border-radius: 3px;
-      font-family: sans-serif;
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      margin-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    button:hover { background: #c41a07; }
-    button:active { transform: scale(0.98); }
-    button:disabled { background: #4a1208; color: #7a2010; cursor: not-allowed; }
-
-    /* Spinner */
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.25);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: none;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Result */
-    .result {
-      margin-top: 1.5rem;
-      border-radius: 3px;
-      overflow: hidden;
-      animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
-      display: none;
-    }
-
-    .result-header {
-      font-size: 0.65rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 0.5rem 1rem;
-      font-weight: 500;
-    }
-
-    .result.success .result-header { background: #0a2e14; color: #4ade80; }
-    .result.error   .result-header { background: #2e0a0a; color: #f87171; }
-
-    .result-body {
-      background: #111;
-      border: 1px solid var(--border);
-      border-top: none;
-      padding: 1rem;
-      font-size: 0.78rem;
-      line-height: 1.7;
-      color: var(--off-white);
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
 
+  <div class="card">
+    <div class="card-header">
+      <div class="logo-bars">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <h1>API Endpoint<br/>Validator</h1>
+      <p>One Eleven · Developer Task</p>
+    </div>
 
-    <div class="card">
-      <div class="card-title">Test Your Endpoint</div>
-      <div class="card-sub">Submit your API URL and email to validate against the One Eleven test suite.</div>
-
+    <div class="card-body">
       <div class="field">
-        <label>Email Address</label>
+        <label for="email">Your Email Address</label>
         <input id="email" type="email" placeholder="you@example.com" />
       </div>
 
       <div class="field">
-        <label>API Endpoint URL</label>
-        <input id="url" type="url" placeholder="https://your-api.vercel.app/api/sort" />
+        <label for="url">Your API Endpoint URL</label>
+        <input id="url" type="url" placeholder="https://your-api.railway.app" />
       </div>
 
-      <button id="submitBtn" onclick="runTest()">
-        <span id="btnText">Run Validation</span>
-        <div class="spinner" id="spinner"></div>
+      <button id="btn" onclick="validate()">
+        Run Validation
+        <div class="spinner"></div>
       </button>
 
-      <div class="result" id="result">
-        <div class="result-header" id="resultHeader"></div>
-        <div class="result-body" id="resultBody"></div>
+      <div id="result"></div>
+
+      <div class="info">
+        This form submits your endpoint to the One Eleven validation service.<br/>
+        Your API must accept <code>POST { data: "string" }</code> and return <code>{ word: [...] }</code>.
       </div>
     </div>
-
   </div>
 
-  <script>
-    async function runTest() {
-      const email = document.getElementById('email').value.trim();
-      const url   = document.getElementById('url').value.trim();
-
-      if (!email || !url) {
-        showResult('error', '⚠ Missing fields', 'Please fill in both your email address and API endpoint URL.');
-        return;
-      }
-
-      setLoading(true);
-
-      const testUrl = `https://yhxzjyykdsfkdrmdxgho.supabase.co/functions/v1/application-task?url=${encodeURIComponent(url)}&email=${encodeURIComponent(email)}`;
-
-      try {
-        const res  = await fetch(testUrl);
-        const text = await res.text();
-        let display;
-        try {
-          display = JSON.stringify(JSON.parse(text), null, 2);
-        } catch {
-          display = text;
-        }
-        if (res.ok) {
-          showResult('success', '✓ Validation complete', display);
-        } else {
-          showResult('error', `✗ Error ${res.status}`, display);
-        }
-      } catch (err) {
-        showResult('error', '✗ Network error', err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    function setLoading(on) {
-      const btn     = document.getElementById('submitBtn');
-      const txt     = document.getElementById('btnText');
-      const spinner = document.getElementById('spinner');
-      btn.disabled       = on;
-      txt.textContent    = on ? 'Validating...' : 'Run Validation';
-      spinner.style.display = on ? 'block' : 'none';
-    }
-
-    function showResult(type, header, body) {
-      const el = document.getElementById('result');
-      el.className = `result ${type}`;
-      document.getElementById('resultHeader').textContent = header;
-      document.getElementById('resultBody').textContent   = body;
-      el.style.display = 'block';
-    }
-
-    // Allow Enter key to submit
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') runTest();
-    });
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
