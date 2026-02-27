@@ -1,38 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Validator — One Eleven</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Endpoint Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: white;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        input[type="email"],
+        input[type="url"],
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]::placeholder,
+        input[type="url"]::placeholder,
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-test {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+        }
+
+        .btn-validate {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .response {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+        }
+
+        .response.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response h3 {
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .response pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <div class="card-header">
-      <h1>API Endpoint Validator</h1>
-      <p>One Eleven · Developer Task</p>
+    <div class="container">
+        <h1>API Endpoint Tester</h1>
+        
+        <form id="testerForm">
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="your.email@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="apiUrl">API Endpoint URL:</label>
+                <input type="url" id="apiUrl" name="apiUrl" required 
+                       placeholder="https://your-api.vercel.app/api/sort-string">
+            </div>
+
+            <div class="form-group">
+                <label for="testData">Test Data (string to sort):</label>
+                <input type="text" id="testData" name="testData" 
+                       placeholder="example" value="example">
+            </div>
+
+            <div class="button-group">
+                <button type="button" id="testBtn" class="btn-test">
+                    Test API Directly
+                </button>
+                <button type="button" id="validateBtn" class="btn-validate">
+                    Validate via Provided Endpoint
+                </button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing request...</p>
+        </div>
+
+        <div class="response" id="response">
+            <h3>Response:</h3>
+            <pre id="responseContent"></pre>
+        </div>
     </div>
 
-    <div class="card-body">
-      <div class="field">
-        <label for="email">Your Email Address</label>
-        <input id="email" type="email" placeholder="you@example.com" />
-      </div>
+    <script>
+        const form = document.getElementById('testerForm');
+        const testBtn = document.getElementById('testBtn');
+        const validateBtn = document.getElementById('validateBtn');
+        const loading = document.getElementById('loading');
+        const response = document.getElementById('response');
+        const responseContent = document.getElementById('responseContent');
 
-      <div class="field">
-        <label for="url">Your API Endpoint URL</label>
-        <input id="url" type="url" placeholder="https://your-app-url.com/sort" />
-      </div>
+        function showLoading() {
+            loading.classList.add('show');
+            response.classList.remove('show');
+            testBtn.disabled = true;
+            validateBtn.disabled = true;
+        }
 
-      <button id="btn" onclick="validate()">
-        Run Validation
-        <div class="spinner"></div>
-      </button>
+        function hideLoading() {
+            loading.classList.remove('show');
+            testBtn.disabled = false;
+            validateBtn.disabled = false;
+        }
 
-      <div id="result"></div>
-    </div>
-  </div>
+        function showResponse(data, isError = false) {
+            hideLoading();
+            responseContent.textContent = JSON.stringify(data, null, 2);
+            responseContent.style.color = isError ? '#ff6b6b' : '#00ff00';
+            response.classList.add('show');
+        }
 
-  <script src="main.js"></script>
+        // Test API directly
+        testBtn.addEventListener('click', async () => {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const testData = document.getElementById('testData').value || 'example';
+
+            if (!apiUrl) {
+                alert('Please enter an API endpoint URL');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ data: testData })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResponse({
+                        status: 'Success',
+                        statusCode: response.status,
+                        data: data
+                    });
+                } else {
+                    showResponse({
+                        status: 'Error',
+                        statusCode: response.status,
+                        error: data
+                    }, true);
+                }
+            } catch (error) {
+                showResponse({
+                    status: 'Network Error',
+                    error: error.message
+                }, true);
+            }
+        });
+
+        // Validate via provided endpoint
+        validateBtn.addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const apiUrl = document.getElementById('apiUrl').value;
+
+            if (!email || !apiUrl) {
+                alert('Please enter both email and API endpoint URL');
+                return;
+            }
+
+            showLoading();
+
+            const validationUrl = `https://yhxzjyykdsfkdrmdxgho.supabase.co/functions/v1/junior-dev?url=${encodeURIComponent(apiUrl)}&email=${encodeURIComponent(email)}`;
+
+            try {
+                const response = await fetch(validationUrl);
+                const data = await response.text();
+                
+                showResponse({
+                    status: response.ok ? 'Validation Complete' : 'Validation Failed',
+                    statusCode: response.status,
+                    message: data || 'No response content',
+                    validationUrl: validationUrl
+                }, !response.ok);
+            } catch (error) {
+                showResponse({
+                    status: 'Validation Error',
+                    error: error.message,
+                    validationUrl: validationUrl
+                }, true);
+            }
+        });
+
+        // Auto-fill API URL if it's a Vercel deployment
+        document.getElementById('apiUrl').addEventListener('blur', function() {
+            const url = this.value;
+            if (url && !url.includes('/api/')) {
+                // Suggest the API path
+                if (url.endsWith('/')) {
+                    this.value = url + 'api/sort-string';
+                } else {
+                    this.value = url + '/api/sort-string';
+                }
+            }
+        });
+    </script>
 </body>
 </html>

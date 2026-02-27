@@ -1,0 +1,13 @@
+{
+  "name": "junior-dev-task-api",
+  "version": "1.0.0",
+  "description": "API endpoint for junior developer task - string sorting",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@vercel/node": "^3.0.0"
+  }
+}
